@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 
 app.use(express.static("public"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.listen(3000, () => {
     console.log('grapple')
@@ -19,7 +22,7 @@ const conn = mysql.createConnection({
 
 conn.connect();
 
-app.post('login', (req, res) => {
+app.post('/login', (req, res) => {
     const id = req.body.id;
     let data = [];
     
@@ -38,6 +41,24 @@ app.post('login', (req, res) => {
                     name : ''
                 })
             }
+            res.render('index.ejs',{data: JSON.stringify(data)});
+        }
+    );
+    console.log(data);
+});
+
+app.post('/join', (req, res) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    let data = [];
+    
+    let query = conn.query(
+        `INSERT INTO dbtest VALUES ('${id}','${name}')`,
+        async (err) => {
+            if(err) throw err;
+                data.push({
+                    result : true
+                });
             res.render('index.ejs',{data: JSON.stringify(data)});
         }
     );
